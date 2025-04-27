@@ -8,12 +8,12 @@ let animationState = "opening"; // opening, images, revealing, complete
 
 let images = [];
 let imageFiles = [
-  "img1.jpg", // graduation
-  "img2.jpg", // basketball
-  "img3.jpg", // yankees
-  "img4.jpg", // cat
-  "img5.jpg", // bucket hat
-  "img6.jpg", // golf
+  "images/img1.jpg", // graduation
+  "images/img2.jpg", // basketball
+  "images/img3.jpg", // yankees
+  "images/img4.jpg", // cat
+  "images/img5.jpg", // bucket hat
+  "images/img6.jpg", // golf
 ];
 let currentImageIndex = 0;
 let imageOpacity = 0;
