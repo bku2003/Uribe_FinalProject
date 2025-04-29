@@ -7,7 +7,7 @@ let rows;
 const scrollSpeed = 1;
 
 function preload() {
-  font = loadFont("Web437_Cordata_PPC-21.woff");
+  font = loadFont("public/fonts/Web437_Cordata_PPC-21.woff");
 }
 
 function setup() {
