@@ -1,5 +1,7 @@
 let font;
 let matrix = [];
+let mouseSpeed = 0;
+let lastMouseX;
 // ADJUST CHARACTER SIZE HERE (try 15-30)
 const fontSize = 15; 
 const characters = "ATAYAT-001-001-001";
@@ -12,66 +14,35 @@ let isAnimating = true;
 let lastMouseAngle = 0;
 let clockwise = true;
 let timeOffset = 0;
-let images = [];
-let imageX = [];
-const IMAGE_OPACITY = 10; // 10% opacity
-let lastMouseX = 0;
-let imageSpeed = 0;
-const IMAGE_SPEED = 1; // Adjust speed of image movement
-let imageHeight;
 
 // CRT effect parameters
-let rgbOffset = 1.5; // ADJUST RGB SHIFT AMOUNT HERE
-let scanlineAlpha = 50; // ADJUST SCANLINE INTENSITY HERE
-const NEON_GREEN = [0, 255, 70]; // RGB values for neon green
+let rgbOffset = 1.5;
+let scanlineAlpha = 50;
+const NEON_GREEN = [0, 255, 70];
+
+// Add this with other global variables at the top
+let lastBuffer; 
+
+// Add at top with other variables
+let mouseVelocity = 0;
+const MIN_SPEED = 0.5;
+const MAX_SPEED = 8;
+const ACCELERATION = 0.2;
 
 function preload() {
   console.log("Loading font...");
   font = loadFont('public/fonts/Web437_Cordata_PPC-21.woff');
-  // Load all images from public/images
-  loadImageDirectory();
-}
-
-function loadImageDirectory() {
-  // Array of image filenames from your public/images directory
-  const imageFiles = [
-    'public/images/image1.jpg',
-    'public/images/image2.JPG',
-    'public/images/image3.jpg',
-    'public/images/image4.jpg',
-    'public/images/image5.jpg',
-    'public/images/image6.jpg',
-    'public/images/image7.jpg',
-    'public/images/image8.jpg',
-    'public/images/image9.jpg',
-    'public/images/image10.jpg',
-    // Add all your image filenames here
-  ];
-
-  imageFiles.forEach((filepath, index) => {
-    loadImage(filepath, img => {
-      images.push(img);
-      imageX[index] = index * width; // Position images side by side
-    });
-  });
 }
 
 function setup() {
-  let canvas = createCanvas(windowWidth, windowHeight); // Make canvas fullscreen
+  let canvas = createCanvas(800, 800); // Fixed size instead of full width
   canvas.parent('sketch-holder');
-  if (font) {
-    console.log("Font loaded successfully");
-    textFont(font);
-  } else {
-    console.warn("Font failed to load, using monospace fallback");
-    textFont("monospace");
-  }
-  textSize(fontSize);
+  
+  // Update columns calculation for fixed width
+  columns = floor(width / fontSize);
+  rows = floor(height / fontSize);
 
-  columns = floor(800 / fontSize);
-  rows = floor(800 / fontSize);
-
-  // Initialize matrix array with fixed pattern
+  // Initialize matrix array
   for (let i = 0; i < rows; i++) {
     matrix[i] = {
       x: random(-500, 0),
@@ -79,81 +50,45 @@ function setup() {
       chars: [],
     };
     for (let j = 0; j < columns; j++) {
-      // Use characters in sequence instead of random
       matrix[i].chars[j] = characters[j % characters.length];
     }
   }
-
-  // Initialize image positions to create a continuous reel
-  imageX = images.map((_, index) => index * windowWidth);
   
+  // Initialize mouse tracking
   lastMouseX = mouseX;
+  lastMouseAngle = 0;
 
   // Calculate height to fill screen while maintaining aspect ratio
-  imageHeight = height;
-}
-
-function drawImageReel() {
-  // Calculate mouse-based speed
-  let currentMouseSpeed = abs(mouseX - lastMouseX);
-  imageSpeed = lerp(imageSpeed, currentMouseSpeed * 0.5, 0.1); // Smooth acceleration
-  
-  push();
-  tint(255, IMAGE_OPACITY);
-  
-  // Draw each image
-  images.forEach((img, index) => {
-    // Calculate dimensions to fill screen while maintaining aspect ratio
-    let aspectRatio = img.width / img.height;
-    let imgHeight = windowHeight;
-    let imgWidth = imgHeight * aspectRatio;
-    
-    // Draw image
-    image(img, imageX[index], 0, imgWidth, imgHeight);
-    
-    // Move image based on mouse speed
-    imageX[index] += imageSpeed;
-    
-    // Wrap images around when they move off screen
-    if (imageX[index] > windowWidth) {
-      // Find leftmost image position
-      let leftmostX = Math.min(...imageX);
-      imageX[index] = leftmostX - imgWidth;
-    } else if (imageX[index] + imgWidth < 0) {
-      // Find rightmost image position
-      let rightmostX = Math.max(...imageX);
-      imageX[index] = rightmostX;
-    }
-  });
-  pop();
-  
-  lastMouseX = mouseX;
 }
 
 function draw() {
-  background(0);
-  
-  // Draw background images first
-  drawImageReel();
-
-  if (!isAnimating) {
+  if (!isAnimating && lastBuffer) {
+    // If paused, just show the last frame
+    image(lastBuffer, 0, 0);
     return;
   }
 
-  // Create main graphics buffer
-  let mainBuffer = createGraphics(width, height);
-  mainBuffer.background(0);
-
-  // Create clock mask
-  let clockMask = createGraphics(width, height);
+  background(0);
+  
+  // Create buffers with fixed size
+  let mainBuffer = createGraphics(800, 800);
+  let clockMask = createGraphics(800, 800);
+  
+  // Setup clock mask
   clockMask.background(0);
   clockMask.noFill();
   clockMask.stroke(255);
   clockMask.strokeWeight(30);
-  clockMask.circle(400, 400, 600);
+  
+  // Center the clock in the fixed canvas
+  let clockX = 400; // Center X
+  let clockY = 400; // Center Y
+  let clockSize = 600; // Fixed size for clock
+  
+  clockMask.circle(clockX, clockY, clockSize);
 
-  // Get mouse angle for hour hand and determine direction
-  let mouseAngle = atan2(mouseY - 400, mouseX - 400);
+  // Update mouse angle calculation to use centered coordinates
+  let mouseAngle = atan2(mouseY - clockY, mouseX - clockX);
   let angleDiff = mouseAngle - lastMouseAngle;
   
   // Normalize angle difference to determine direction
@@ -192,10 +127,18 @@ function draw() {
         mainBuffer.text(matrix[i].chars[j], x, i * fontSize);
       }
     }
-    let speed = map(mouseSpeed, 0, 50, 0.5, 5);
+    // Map mouse velocity to character speed
+    let speed = map(mouseVelocity, 0, 100, MIN_SPEED, MAX_SPEED);
+    speed = constrain(speed, MIN_SPEED, MAX_SPEED);
     matrix[i].x += speed;
   }
   mainBuffer.pop();
+
+  // After all drawing is complete, store the current frame
+  lastBuffer = mainBuffer.get();
+  
+  // Draw the current frame
+  image(mainBuffer, 0, 0);
 
   // Apply CRT effects
   // RGB Split effect with maintained green color
@@ -231,13 +174,13 @@ function draw() {
   if (scanLine > height) scanLine = 0;
 }
 
-// Update drawClockHand function
+// Update drawClockHand function to use the same center point
 function drawClockHand(g, value, type, length) {
   let angle;
   let now = new Date();
   
   if (type === "hour") {
-    angle = value; // Direct mouse angle
+    angle = value;
   } else {
     // Calculate time-based position including offset
     if (type === "minute") {
@@ -252,24 +195,29 @@ function drawClockHand(g, value, type, length) {
   }
   
   g.push();
-  g.translate(400, 400);
+  g.translate(400, 400); // Use same center point as clock
   g.rotate(angle);
   g.stroke(255);
-  g.strokeWeight(30); // Restore original thickness for all hands
+  g.strokeWeight(30);
   g.line(0, 0, 0, -length);
   g.pop();
 }
 
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  // Reinitialize image positions
-  imageX = images.map((_, index) => index * windowWidth);
+  // Don't resize canvas, just recenter it
+  let x = (windowWidth - width) / 2;
+  let y = (windowHeight - height) / 2;
+  canvas.position(x, y);
 }
 
-// Add keyPressed function to handle space bar
+// Update keyPressed function
 function keyPressed() {
-  if (keyCode === 32) {
-    // 32 is the keyCode for spacebar
+  if (keyCode === 32) { // spacebar
     isAnimating = !isAnimating;
+    if (isAnimating) {
+      // Clear the stored buffer when resuming
+      lastBuffer = null;
+    }
+    return false; // Prevent default space bar behavior
   }
 }
