@@ -25,9 +25,9 @@ let lastBuffer;
 
 // Add at top with other variables
 let mouseVelocity = 0;
-const MIN_SPEED = 0.5;
-const MAX_SPEED = 8;
-const ACCELERATION = 0.2;
+const MIN_SPEED = 0.5;  // Minimum movement speed
+const MAX_SPEED = 12;   // Maximum movement speed
+const ACCELERATION = 0.2; // How quickly speed changes (0-1)
 
 function preload() {
   console.log("Loading font...");
@@ -220,4 +220,12 @@ function keyPressed() {
     }
     return false; // Prevent default space bar behavior
   }
+}
+
+// Add this new function after keyPressed()
+function mouseMoved() {
+  // Calculate mouse velocity based on horizontal movement
+  let mouseXDiff = abs(mouseX - lastMouseX);
+  mouseVelocity = lerp(mouseVelocity, mouseXDiff, ACCELERATION);
+  lastMouseX = mouseX;
 }
