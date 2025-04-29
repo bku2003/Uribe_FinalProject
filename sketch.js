@@ -3,7 +3,7 @@ let matrix = [];
 let lastMouseX;
 // ADJUST CHARACTER SIZE HERE (try 15-30)
 const fontSize = 25; 
-const characters = "ATAYAT-001-001-001";
+const characters = "INLAND-EMPIRE-BORN-A-TALE-AS-YOUNG-AS-TIME";
 let columns;
 let rows;
 let scanLine = 0;

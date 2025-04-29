@@ -8,22 +8,46 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Ensure minimum height */
+  min-height: 100vh;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start; /* Change to flex-start */
+  justify-content: space-between; /* This spreads out the children */
   width: 100%;
-  gap: 40px; /* Add gap between elements */
+  min-height: 100vh; /* Make container take full viewport height */
+  padding: 5px 0; /* Add padding top and bottom */
+  box-sizing: border-box; /* Include padding in height calculation */
+}
+
+.headings {
+  text-align: center;
+  font-family: "Web437_Cordata_PPC-21", monospace;
+  padding: 0 20px;
+  z-index: 10;
+}
+
+h1 {
+  font-size: 12pt;
+  color: rgb(0, 255, 70);
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-size: 12pt;
+  color: rgb(50, 50, 50);
+  opacity: 1;
+  margin: 0;
+  padding-top: 3px; /* Add 3px spacing between headings */
 }
 
 #sketch-holder {
   width: 800px; /* Change from 100vw to fixed width */
   height: 800px;
-  margin: 0 auto; /* Center horizontally */
+  margin: 0 auto;
 }
 
 canvas {
@@ -33,26 +57,27 @@ canvas {
   filter: brightness(1.2) contrast(1.1) saturate(1.1);
 }
 
-.headings {
-  text-align: center;
+.neon-button {
   font-family: "Web437_Cordata_PPC-21", monospace;
-  padding: 0 20px;
-  z-index: 10; /* Ensure headings appear above canvas */
+  font-size: 10pt;
+  color: rgb(0, 255, 70);
+  background-color: black;
+  border: 1px solid rgb(0, 255, 70);
+   /* Format: padding: top right bottom left */
+   padding: 6px 12px 4px 12px;
+  /* ADJUST BUTTON ROUNDEDNESS HERE (currently 0 - square corners) */
+  border-radius: 20px;
+  text-decoration: none;
+  display: inline-block;
+  margin: 0; /* Remove existing margin */
+  /* Other button properties remain the same */
 }
 
-h1 {
-  font-size: 12pt;
-  color: rgb(0, 255, 70);
-  margin: 0;
-  padding: 0;
-  text-shadow: 0 0 10px rgba(0, 255, 70, 0.5);
-}
-
-h2 {
-  font-size: 12pt;
-  color: rgb(0, 255, 70);
-  opacity: 0.9;
-  margin: 5px 0 0 0;
-  padding: 0;
-  text-shadow: 0 0 10px rgba(0, 255, 70, 0.3);
+/* Add hover state for the button */
+.neon-button:hover {
+    border-color: black;
+    background-color: rgb(0, 255, 70);
+    color: black;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
