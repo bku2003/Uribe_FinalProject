@@ -7,17 +7,42 @@ let rows;
 const scrollSpeed = 1;
 
 function preload() {
-  font = loadFont("public/fonts/Web437_Cordata_PPC-21.woff");
+  console.log("Starting font load...");
+  loadFont(
+    "public/fonts/Web437_Cordata_PPC-21.woff",
+    // Success callback
+    function (f) {
+      console.log("Font loaded successfully!");
+      font = f;
+    },
+    // Error callback
+    function (err) {
+      console.error("Error loading font:", err);
+      // Fallback to a system font if the custom font fails to load
+      font = null;
+    }
+  );
 }
 
 function setup() {
+  console.log("Setting up sketch...");
   createCanvas(windowWidth, windowHeight);
-  textFont(font);
+
+  // Use the custom font if loaded, otherwise fallback to monospace
+  if (font) {
+    textFont(font);
+  } else {
+    textFont("monospace");
+    console.log("Using fallback font: monospace");
+  }
+
   textSize(fontSize);
+  console.log(`Canvas created: ${width}x${height}`);
 
   // Calculate number of columns and rows
   columns = floor(width / fontSize);
   rows = floor(height / fontSize);
+  console.log(`Grid: ${columns} columns x ${rows} rows`);
 
   // Initialize matrix array
   for (let i = 0; i < columns; i++) {
