@@ -15,8 +15,8 @@ let clockwise = true;
 let timeOffset = 0;
 
 // CRT effect parameters
-let rgbOffset = 1.5;
-let scanlineAlpha = 50;
+let rgbOffset = 3;      // Increase to make RGB split more pronounced (try 2.0-3.0)
+let scanlineAlpha = 100;   // Increase for more visible scanlines (try 70-100)
 const NEON_GREEN = [0, 255, 70];
 
 // Add this with other global variables at the top
