@@ -24,7 +24,8 @@ let lastBuffer;
 
 function preload() {
   console.log("Loading font...");
-  font = loadFont('public/fonts/Web437_Cordata_PPC-21.woff');
+  // Change this line to use the correct font file
+  font = loadFont('public/fonts/Web437_Cordata_PPC-400.woff');
 }
 
 function setup() {

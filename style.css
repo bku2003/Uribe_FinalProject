@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Web437_Cordata_PPC-400';
+  src: url('../public/fonts/Web437_Cordata_PPC-400.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html,
 body {
   width: 100%;
@@ -18,13 +25,13 @@ body {
   justify-content: space-between; /* This spreads out the children */
   width: 100%;
   min-height: 100vh; /* Make container take full viewport height */
-  padding: 10px 0; /* Add padding top and bottom */
+  padding: 25px 0; /* Add padding top and bottom */
   box-sizing: border-box; /* Include padding in height calculation */
 }
 
 .headings {
   text-align: center;
-  font-family: "Web437_Cordata_PPC-21", monospace;
+  font-family: "Web437_Cordata_PPC-400", monospace;
   padding: 0 20px;
   z-index: 10;
 }
@@ -34,6 +41,7 @@ h1 {
   color: rgb(0, 255, 70);
   margin: 0;
   padding: 0;
+  letter-spacing: 2px; /* Add space between letters */
 }
 
 h2 {
@@ -41,7 +49,8 @@ h2 {
   color: rgb(50, 50, 50);
   opacity: 1;
   margin: 0;
-  padding-top: 3px; /* Add 3px spacing between headings */
+  padding-top: 3px;
+  letter-spacing: 2px; /* Add space between letters */
 }
 
 #sketch-holder {
@@ -58,7 +67,7 @@ canvas {
 }
 
 .neon-button {
-  font-family: "Web437_Cordata_PPC-21", monospace;
+  font-family: "Web437_Cordata_PPC-400", monospace;
   font-size: 10pt;
   color: rgb(0, 255, 70);
   background-color: black;
@@ -71,6 +80,7 @@ canvas {
   display: inline-block;
   margin: 0; /* Remove existing margin */
   /* Other button properties remain the same */
+  letter-spacing: 4px; /* Add space between letters */
 }
 
 /* Add hover state for the button */
