@@ -2,18 +2,55 @@ html,
 body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: black;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  background-color: black;
-  margin: 0;
-  padding: 0;
+  min-height: 100vh; /* Ensure minimum height */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Change to flex-start */
+  width: 100%;
+  gap: 40px; /* Add gap between elements */
+}
+
+#sketch-holder {
+  width: 800px; /* Match canvas size */
+  height: 800px;
 }
 
 canvas {
   display: block;
-  margin: auto;
   image-rendering: pixelated;
-  filter: brightness(1.2) contrast(1.1) saturate(1.1); /* Enhanced saturation for neon effect */
+  filter: brightness(1.2) contrast(1.1) saturate(1.1);
+}
+
+.headings {
+  text-align: center;
+  font-family: "Web437_Cordata_PPC-21", monospace;
+  padding: 0 20px;
+  z-index: 10; /* Ensure headings appear above canvas */
+}
+
+h1 {
+  font-size: 12pt;
+  color: rgb(0, 255, 70);
+  margin: 0;
+  padding: 0;
+  text-shadow: 0 0 10px rgba(0, 255, 70, 0.5);
+}
+
+h2 {
+  font-size: 12pt;
+  color: rgb(0, 255, 70);
+  opacity: 0.75;
+  margin: 5px 0 0 0;
+  padding: 0;
+  text-shadow: 0 0 10px rgba(0, 255, 70, 0.3);
 }
