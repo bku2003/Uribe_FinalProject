@@ -1,9 +1,8 @@
 let font;
 let matrix = [];
-let mouseSpeed = 0;
 let lastMouseX;
 // ADJUST CHARACTER SIZE HERE (try 15-30)
-const fontSize = 15; 
+const fontSize = 25; 
 const characters = "ATAYAT-001-001-001";
 let columns;
 let rows;
@@ -23,12 +22,6 @@ const NEON_GREEN = [0, 255, 70];
 // Add this with other global variables at the top
 let lastBuffer; 
 
-// Add at top with other variables
-let mouseVelocity = 0;
-const MIN_SPEED = 0.5;  // Minimum movement speed
-const MAX_SPEED = 12;   // Maximum movement speed
-const ACCELERATION = 0.2; // How quickly speed changes (0-1)
-
 function preload() {
   console.log("Loading font...");
   font = loadFont('public/fonts/Web437_Cordata_PPC-21.woff');
@@ -46,7 +39,7 @@ function setup() {
   for (let i = 0; i < rows; i++) {
     matrix[i] = {
       x: random(-500, 0),
-      speed: random(1, 3),
+      speed: random(0.2, 0.8), // Reduced from random(1, 3) to slower values
       chars: [],
     };
     for (let j = 0; j < columns; j++) {
@@ -127,10 +120,8 @@ function draw() {
         mainBuffer.text(matrix[i].chars[j], x, i * fontSize);
       }
     }
-    // Map mouse velocity to character speed
-    let speed = map(mouseVelocity, 0, 100, MIN_SPEED, MAX_SPEED);
-    speed = constrain(speed, MIN_SPEED, MAX_SPEED);
-    matrix[i].x += speed;
+    // Use constant speed instead of mouse-based speed
+    matrix[i].x += matrix[i].speed;
   }
   mainBuffer.pop();
 
@@ -220,12 +211,4 @@ function keyPressed() {
     }
     return false; // Prevent default space bar behavior
   }
-}
-
-// Add this new function after keyPressed()
-function mouseMoved() {
-  // Calculate mouse velocity based on horizontal movement
-  let mouseXDiff = abs(mouseX - lastMouseX);
-  mouseVelocity = lerp(mouseVelocity, mouseXDiff, ACCELERATION);
-  lastMouseX = mouseX;
 }
