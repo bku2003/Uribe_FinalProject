@@ -1,138 +1,121 @@
-let bookWidth = 250;
-let bookHeight = 250;
-let pageAngle = 0;
-let words = ["A", "TALE", "AS", "YOUNG", "AS", "TIME"];
-let currentWordIndex = 0;
-let wordOpacity = 0;
-let animationState = "opening"; // opening, images, revealing, complete
-
-let images = [];
-let imageFiles = [
-  "images/img1.jpg", // graduation
-  "images/img2.jpg", // basketball
-  "images/img3.jpg", // yankees
-  "images/img4.jpg", // cat
-  "images/img5.jpg", // bucket hat
-  "images/img6.jpg", // golf
-];
-let currentImageIndex = 0;
-let imageOpacity = 0;
+let font;
+let matrix = [];
+const characters = "BMMY98C7JI1DB"; // Characters from the reference image
+const fontSize = 15;
+let columns;
+let rows;
+const scrollSpeed = 1;
 
 function preload() {
-  for (let i = 0; i < imageFiles.length; i++) {
-    images[i] = loadImage(imageFiles[i]);
-  }
+  font = loadFont("Web437_Cordata_PPC-21.woff");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  textAlign(CENTER, CENTER);
-  textSize(32);
+  textFont(font);
+  textSize(fontSize);
+
+  // Calculate number of columns and rows
+  columns = floor(width / fontSize);
+  rows = floor(height / fontSize);
+
+  // Initialize matrix array
+  for (let i = 0; i < columns; i++) {
+    matrix[i] = {
+      y: random(-500, 0),
+      speed: random(2, 5),
+      chars: [],
+    };
+    for (let j = 0; j < rows; j++) {
+      matrix[i].chars[j] = characters.charAt(floor(random(characters.length)));
+    }
+  }
 }
 
 function draw() {
-  background(0);
-  translate(width / 2, height / 2);
+  background(0, 25);
 
-  // Draw book
-  push();
-  fill(50);
-  rect(-bookWidth / 2, -bookHeight / 2, bookWidth, bookHeight);
-
-  // Draw pages
-  fill(255);
-  if (animationState === "opening") {
-    pageAngle = map(frameCount, 0, 60, 0, PI / 2);
-    if (frameCount > 60) {
-      animationState = "images";
-      frameCount = 0;
+  // Draw matrix rain
+  for (let i = 0; i < columns; i++) {
+    for (let j = 0; j < rows; j++) {
+      let y = (matrix[i].y + j * fontSize) % height;
+      let alpha = map(j, 0, rows, 255, 50);
+      fill(0, 255, 70, alpha);
+      text(matrix[i].chars[j], i * fontSize, y);
     }
+    matrix[i].y += matrix[i].speed;
   }
 
-  // Left page
-  push();
-  translate(-bookWidth / 4, 0);
-  rotate(-pageAngle);
-  rect(-bookWidth / 4, -bookHeight / 2, bookWidth / 2, bookHeight);
-  pop();
-
-  // Right page
-  push();
-  translate(bookWidth / 4, 0);
-  rotate(pageAngle);
-  rect(0, -bookHeight / 2, bookWidth / 2, bookHeight);
-  pop();
-  pop();
-
-  // Draw images in sequence after opening
-  if (animationState === "images") {
-    if (currentImageIndex < images.length) {
-      if (frameCount < 20) {
-        imageOpacity = map(frameCount, 0, 20, 0, 255);
-      } else if (frameCount < 50) {
-        imageOpacity = 255;
-      } else {
-        frameCount = 0;
-        currentImageIndex++;
-        if (currentImageIndex >= images.length) {
-          animationState = "revealing";
-          frameCount = 0;
-        }
-      }
-      push();
-      imageMode(CENTER);
-      tint(255, imageOpacity);
-      if (images[currentImageIndex]) {
-        let img = images[currentImageIndex];
-        let scale = min(bookWidth / img.width, bookHeight / img.height);
-        image(img, 0, 0, img.width * scale, img.height * scale);
-      }
-      pop();
-    }
-  }
-  // Draw text
-  else if (animationState === "revealing") {
-    if (currentWordIndex < words.length) {
-      if (frameCount < 30) {
-        wordOpacity = map(frameCount, 0, 30, 0, 255);
-      } else if (frameCount < 60) {
-        wordOpacity = 255;
-      } else {
-        frameCount = 0;
-        currentWordIndex++;
-        if (currentWordIndex >= words.length) {
-          animationState = "complete";
-        }
-      }
-      push();
-      fill(255, wordOpacity);
-      textSize(getWordFontSize(words[currentWordIndex]));
-      text(words[currentWordIndex], 0, 0, bookWidth * 0.9, bookHeight * 0.9);
-      pop();
-    }
-  } else if (animationState === "complete") {
-    push();
-    fill(255);
-    textSize(32);
-    let completeText = words.join(" ");
-    text(completeText, 0, 0);
-    pop();
-  }
+  // Draw clock
+  drawClock();
 }
 
-function getWordFontSize(word) {
-  // Make the word fill the book width
-  let size = 32;
-  textSize(size);
-  let tw = textWidth(word);
-  while (tw < bookWidth * 0.85 && size < 120) {
-    size += 2;
-    textSize(size);
-    tw = textWidth(word);
+function drawClock() {
+  push();
+  translate(width / 2, height / 2);
+
+  // Draw clock circle using characters
+  let radius = min(width, height) * 0.3;
+  let points = 60;
+  let angle = TWO_PI / points;
+
+  for (let i = 0; i < points; i++) {
+    let x = cos(angle * i) * radius;
+    let y = sin(angle * i) * radius;
+    fill(255);
+    text(characters.charAt(floor(random(characters.length))), x, y);
   }
-  return size;
+
+  // Calculate time with acceleration
+  let time = millis() * 10; // 10x faster
+  let s = (time / 1000) % 60;
+  let m = (time / 1000 / 60) % 60;
+  let h = (time / 1000 / 3600) % 12;
+
+  // Draw hands
+  // Hour hand
+  push();
+  rotate((h * TWO_PI) / 12 + (m * TWO_PI) / (12 * 60));
+  stroke(255);
+  strokeWeight(4);
+  line(0, 0, 0, -radius * 0.5);
+  pop();
+
+  // Minute hand
+  push();
+  rotate((m * TWO_PI) / 60);
+  stroke(255);
+  strokeWeight(2);
+  line(0, 0, 0, -radius * 0.7);
+  pop();
+
+  // Second hand
+  push();
+  rotate((s * TWO_PI) / 60);
+  stroke(255, 0, 0);
+  strokeWeight(1);
+  line(0, 0, 0, -radius * 0.8);
+  pop();
+
+  pop();
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  // Recalculate matrix dimensions
+  columns = floor(width / fontSize);
+  rows = floor(height / fontSize);
+
+  // Reinitialize matrix array
+  matrix = [];
+  for (let i = 0; i < columns; i++) {
+    matrix[i] = {
+      y: random(-500, 0),
+      speed: random(2, 5),
+      chars: [],
+    };
+    for (let j = 0; j < rows; j++) {
+      matrix[i].chars[j] = characters.charAt(floor(random(characters.length)));
+    }
+  }
 }
