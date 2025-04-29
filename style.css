@@ -18,7 +18,7 @@ body {
   justify-content: space-between; /* This spreads out the children */
   width: 100%;
   min-height: 100vh; /* Make container take full viewport height */
-  padding: 5px 0; /* Add padding top and bottom */
+  padding: 10px 0; /* Add padding top and bottom */
   box-sizing: border-box; /* Include padding in height calculation */
 }
 
