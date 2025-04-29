@@ -22,11 +22,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between; /* This spreads out the children */
+  justify-content: space-between;
   width: 100%;
-  min-height: 100vh; /* Make container take full viewport height */
-  padding: 25px 0; /* Add padding top and bottom */
-  box-sizing: border-box; /* Include padding in height calculation */
+  min-height: 100vh;
+  padding: 25px 0;
+  box-sizing: border-box;
 }
 
 .headings {
@@ -41,7 +41,7 @@ h1 {
   color: rgb(0, 255, 70);
   margin: 0;
   padding: 0;
-  letter-spacing: 2px; /* Add space between letters */
+  letter-spacing: 2px;
 }
 
 h2 {
@@ -50,18 +50,18 @@ h2 {
   opacity: 1;
   margin: 0;
   padding-top: 3px;
-  letter-spacing: 2px; /* Add space between letters */
+  letter-spacing: 2px;
 }
 
 #sketch-holder {
-  width: 800px; /* Change from 100vw to fixed width */
+  width: 800px;
   height: 800px;
   margin: 0 auto;
 }
 
 canvas {
   display: block;
-  width: 800px; /* Change from 100vw to fixed width */
+  width: 800px;
   image-rendering: pixelated;
   filter: brightness(1.2) contrast(1.1) saturate(1.1);
 }
@@ -72,18 +72,14 @@ canvas {
   color: rgb(0, 255, 70);
   background-color: black;
   border: 1px solid rgb(0, 255, 70);
-   /* Format: padding: top right bottom left */
-   padding: 6px 12px 4px 12px;
-  /* ADJUST BUTTON ROUNDEDNESS HERE (currently 0 - square corners) */
+  padding: 6px 12px 4px 12px;
   border-radius: 20px;
   text-decoration: none;
   display: inline-block;
-  margin: 0; /* Remove existing margin */
-  /* Other button properties remain the same */
-  letter-spacing: 4px; /* Add space between letters */
+  margin: 0;
+  letter-spacing: 4px;
 }
 
-/* Add hover state for the button */
 .neon-button:hover {
     border-color: black;
     background-color: rgb(0, 255, 70);

@@ -1,7 +1,7 @@
 let font;
 let matrix = [];
 let lastMouseX;
-// ADJUST CHARACTER SIZE HERE (try 15-30)
+// this is where i can change the character size...smaller characters make it run slower tho
 const fontSize = 25; 
 const characters = "INLAND-EMPIRE-BORN-A-TALE-AS-YOUNG-AS-TIME";
 let columns;
@@ -13,13 +13,10 @@ let isAnimating = true;
 let lastMouseAngle = 0;
 let clockwise = true;
 let timeOffset = 0;
-
-// CRT effect parameters
-let rgbOffset = 3;      // Increase to make RGB split more pronounced (try 2.0-3.0)
-let scanlineAlpha = 100;   // Increase for more visible scanlines (try 70-100)
+// cr tv stuffs
+let rgbOffset = 3;      // rgb split effect
+let scanlineAlpha = 100;   // scan lines visibile
 const NEON_GREEN = [0, 255, 70];
-
-// Add this with other global variables at the top
 let lastBuffer; 
 
 function preload() {
@@ -48,61 +45,60 @@ function setup() {
     }
   }
   
-  // Initialize mouse tracking
+  // initialize mouse tracking
   lastMouseX = mouseX;
   lastMouseAngle = 0;
 
-  // Calculate height to fill screen while maintaining aspect ratio
+  // calculate height to fill screen while maintaining aspect ratio
 }
 
 function draw() {
   if (!isAnimating && lastBuffer) {
-    // If paused, just show the last frame
     image(lastBuffer, 0, 0);
     return;
   }
 
   background(0);
   
-  // Create buffers with fixed size
+  // bubffahs
   let mainBuffer = createGraphics(800, 800);
   let clockMask = createGraphics(800, 800);
   
-  // Setup clock mask
+  // clock
   clockMask.background(0);
   clockMask.noFill();
   clockMask.stroke(255);
   clockMask.strokeWeight(30);
   
-  // Center the clock in the fixed canvas
+  // center the clock in fixed canvas
   let clockX = 400; // Center X
   let clockY = 400; // Center Y
   let clockSize = 600; // Fixed size for clock
   
   clockMask.circle(clockX, clockY, clockSize);
 
-  // Update mouse angle calculation to use centered coordinates
+  // update mouse angle calculation to use centered coordinates
   let mouseAngle = atan2(mouseY - clockY, mouseX - clockX);
   let angleDiff = mouseAngle - lastMouseAngle;
   
-  // Normalize angle difference to determine direction
+  // normalize angle difference to determine direction
   if (angleDiff !== 0) {
-    // Adjust for angle wrap-around
+    // adjust for angle wrap-around
     if (angleDiff > PI) angleDiff -= TWO_PI;
     if (angleDiff < -PI) angleDiff += TWO_PI;
     clockwise = angleDiff > 0;
     
-    // Update time offset based on movement
+    // dpdate time offset based on movement
     timeOffset += clockwise ? 1 : -1;
   }
   lastMouseAngle = mouseAngle;
 
-  // Draw clock hands with direction awareness
+  // draw clock hands with direction awareness
   drawClockHand(clockMask, mouseAngle, "hour", 200);
   drawClockHand(clockMask, timeOffset, "minute", 250);
   drawClockHand(clockMask, timeOffset * 60, "second", 280);
 
-  // Draw everything to main buffer first
+  // draw everything to main buffer first
   mainBuffer.push();
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < columns; j++) {
@@ -110,10 +106,10 @@ function draw() {
       
       let pixelColor = clockMask.get(x, i * fontSize);
       if (pixelColor[0] > 0) {
-        // Update the matrix character color
+        // update the matrix character color
         mainBuffer.fill(NEON_GREEN[0], NEON_GREEN[1], NEON_GREEN[2]);
         if (abs(i * fontSize - scanLine) < fontSize) {
-          // Brighter green on scan line
+          // brighter green on scan line
           mainBuffer.fill(NEON_GREEN[0], NEON_GREEN[1] + 30, NEON_GREEN[2] + 10);
         }
         mainBuffer.textFont(font);
@@ -121,19 +117,19 @@ function draw() {
         mainBuffer.text(matrix[i].chars[j], x, i * fontSize);
       }
     }
-    // Use constant speed instead of mouse-based speed
+    // use constant speed instead of mouse-based speed
     matrix[i].x += matrix[i].speed;
   }
   mainBuffer.pop();
 
-  // After all drawing is complete, store the current frame
+  // after all drawing is complete, store the current frame
   lastBuffer = mainBuffer.get();
   
-  // Draw the current frame
+  // draw current frame
   image(mainBuffer, 0, 0);
 
-  // Apply CRT effects
-  // RGB Split effect with maintained green color
+  // cr tv effects
+  // rgb split
   push();
   blendMode(ADD);
   tint(0, 255, 0); // Base green channel
@@ -144,13 +140,12 @@ function draw() {
   pop();
   noTint();
 
-  // Scanline effect
+  // scanline effect
   for (let y = 0; y < height; y += 4) {
     stroke(0, scanlineAlpha);
     line(0, y, width, y);
   }
-
-  // CRT vignette effect
+  // CRT vignette
   let vignette = createGraphics(width, height);
   vignette.noFill();
   for (let i = 0; i < 100; i++) {
@@ -160,13 +155,11 @@ function draw() {
     vignette.ellipse(width/2, height/2, width-i*5, height-i*5);
   }
   image(vignette, 0, 0);
-
-  // Update scan line
   scanLine += 10;
   if (scanLine > height) scanLine = 0;
 }
 
-// Update drawClockHand function to use the same center point
+// drawClockHand function to use the same center point
 function drawClockHand(g, value, type, length) {
   let angle;
   let now = new Date();
@@ -174,7 +167,7 @@ function drawClockHand(g, value, type, length) {
   if (type === "hour") {
     angle = value;
   } else {
-    // Calculate time-based position including offset
+    // time-based position including offset
     if (type === "minute") {
       let minutes = (minute() + timeOffset) % 60;
       if (minutes < 0) minutes += 60;
@@ -187,7 +180,7 @@ function drawClockHand(g, value, type, length) {
   }
   
   g.push();
-  g.translate(400, 400); // Use same center point as clock
+  g.translate(400, 400); // same center point as clock
   g.rotate(angle);
   g.stroke(255);
   g.strokeWeight(30);
@@ -196,20 +189,19 @@ function drawClockHand(g, value, type, length) {
 }
 
 function windowResized() {
-  // Don't resize canvas, just recenter it
+  // canvas in the center
   let x = (windowWidth - width) / 2;
   let y = (windowHeight - height) / 2;
   canvas.position(x, y);
 }
 
-// Update keyPressed function
+// spacebar to pause and resume
 function keyPressed() {
   if (keyCode === 32) { // spacebar
     isAnimating = !isAnimating;
     if (isAnimating) {
-      // Clear the stored buffer when resuming
       lastBuffer = null;
     }
-    return false; // Prevent default space bar behavior
+    return false;
   }
 }
