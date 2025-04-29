@@ -1,6 +1,6 @@
 let font;
 let matrix = [];
-const characters = "BMMY98C7JI1DB"; // Characters from the reference image
+const characters = "ATAYAT-001-001-001"; // Characters from the reference image
 const fontSize = 15;
 let columns;
 let rows;
