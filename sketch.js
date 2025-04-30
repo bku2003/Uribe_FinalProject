@@ -2,7 +2,7 @@ let font;
 let matrix = [];
 //let lastMouseX;
 // this is where i can change the character size...smaller characters make it run slower tho
-const fontSize = 12; 
+const fontSize = 20; 
 const characters = "INLAND-EMPIRE-BORN-A-TALE-AS-YOUNG-AS-TIME";
 let columns;
 let rows;
