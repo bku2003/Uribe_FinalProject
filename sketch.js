@@ -1,8 +1,8 @@
 let font;
 let matrix = [];
-let lastMouseX;
+//let lastMouseX;
 // this is where i can change the character size...smaller characters make it run slower tho
-const fontSize = 25; 
+const fontSize = 12; 
 const characters = "INLAND-EMPIRE-BORN-A-TALE-AS-YOUNG-AS-TIME";
 let columns;
 let rows;
@@ -19,10 +19,57 @@ let scanlineAlpha = 100;   // scan lines visibile
 const NEON_GREEN = [0, 255, 70];
 let lastBuffer; 
 
+let realTimeData = {
+  hours: 0,
+  minutes: 0,
+  seconds: 0,
+  isApiTime: false
+};
+
 function preload() {
   console.log("Loading font...");
   // Change this line to use the correct font file
   font = loadFont('public/fonts/Web437_Cordata_PPC-400.woff');
+}
+
+async function fetchPSTTime() {
+  try {
+    const response = await fetch('http://worldtimeapi.org/api/timezone/America/Los_Angeles');
+    if (!response.ok) throw new Error('API response error');
+    
+    const data = await response.json();
+    // Parse the datetime string directly as PST
+    const date = new Date(data.datetime);
+    
+    realTimeData.hours = date.getHours();
+    realTimeData.minutes = date.getMinutes();
+    realTimeData.seconds = date.getSeconds();
+    realTimeData.isApiTime = true;
+    updateTimeDisplay();
+    console.log('Successfully fetched PST time:', `${realTimeData.hours}:${realTimeData.minutes}`);
+  } catch (error) {
+    console.error('Failed to fetch PST time, using local time as fallback:', error);
+    useFallbackTime();
+  }
+}
+
+function useFallbackTime() {
+  const options = { 
+    timeZone: 'America/Los_Angeles',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+    hour12: false
+  };
+  
+  const pstTime = new Date().toLocaleString('en-US', options);
+  const [hours, minutes, seconds] = pstTime.split(':').map(Number);
+  
+  realTimeData.hours = hours;
+  realTimeData.minutes = minutes;
+  realTimeData.seconds = seconds;
+  realTimeData.isApiTime = false;
+  updateTimeDisplay();
 }
 
 function setup() {
@@ -49,7 +96,10 @@ function setup() {
   lastMouseX = mouseX;
   lastMouseAngle = 0;
 
-  // calculate height to fill screen while maintaining aspect ratio
+  // alculate height to fill screen while maintaining aspect ratio
+  fetchPSTTime();
+  // Update time every minute
+  setInterval(fetchPSTTime, 60000);
 }
 
 function draw() {
@@ -162,25 +212,33 @@ function draw() {
 // drawClockHand function to use the same center point
 function drawClockHand(g, value, type, length) {
   let angle;
-  let now = new Date();
   
   if (type === "hour") {
     angle = value;
   } else {
-    // time-based position including offset
     if (type === "minute") {
-      let minutes = (minute() + timeOffset) % 60;
+      let minutes;
+      if (realTimeData.isApiTime) {
+        minutes = realTimeData.minutes;
+      } else {
+        minutes = (minute() + timeOffset) % 60;
+      }
       if (minutes < 0) minutes += 60;
       angle = map(minutes, 0, 60, -HALF_PI, TWO_PI - HALF_PI);
     } else { // second hand
-      let seconds = (second() + (timeOffset * 60)) % 60;
+      let seconds;
+      if (realTimeData.isApiTime) {
+        seconds = realTimeData.seconds;
+      } else {
+        seconds = (second() + (timeOffset * 60)) % 60;
+      }
       if (seconds < 0) seconds += 60;
       angle = map(seconds, 0, 60, -HALF_PI, TWO_PI - HALF_PI);
     }
   }
   
   g.push();
-  g.translate(400, 400); // same center point as clock
+  g.translate(400, 400);
   g.rotate(angle);
   g.stroke(255);
   g.strokeWeight(30);
@@ -203,5 +261,21 @@ function keyPressed() {
       lastBuffer = null;
     }
     return false;
+  }
+}
+
+function updateTimeDisplay() {
+  const timeElement = document.getElementById('pst-time');
+  if (timeElement) {
+    let hours = realTimeData.hours;
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // If hours is 0, set to 12
+    
+    // Format the time string
+    let timeString = `${hours.toString()}:${realTimeData.minutes.toString().padStart(2, '0')} ${ampm}`;
+    timeElement.textContent = timeString;
   }
 }

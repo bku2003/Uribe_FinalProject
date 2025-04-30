@@ -87,3 +87,27 @@ canvas {
     cursor: pointer;
     transition: all 0.1s ease;
 }
+
+.clock-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin: 0 auto;
+}
+
+.side-text {
+  display: flex;
+  align-items: center;
+  width: 150px;
+}
+
+/* Left side text alignment */
+.side-text:first-child {
+  justify-content: flex-end;
+}
+
+/* Right side text alignment */
+.side-text:last-child {
+  justify-content: flex-start;
+}
