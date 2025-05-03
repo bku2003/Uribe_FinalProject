@@ -7,18 +7,47 @@
     <link rel="stylesheet" href="style.css" />
     <!-- p5 library N -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
+    <!-- Add a small script to resize the canvas properly -->
+    <script>
+      // Add debounce function to limit resize events
+      function debounce(func, wait) {
+        let timeout;
+        return function () {
+          clearTimeout(timeout);
+          timeout = setTimeout(func, wait);
+        };
+      }
+
+      window.addEventListener("load", function () {
+        // Add a resize observer to adjust canvas size in sketch-holder
+        const resizeObserver = new ResizeObserver(
+          debounce(function () {
+            const sketchHolder = document.getElementById("sketch-holder");
+            if (sketchHolder && window.resizeCanvas) {
+              const width = Math.min(800, sketchHolder.clientWidth);
+              const height = width; // Keep it square
+              window.resizeCanvas(width, height);
+            }
+          }, 250)
+        );
+
+        const sketchHolder = document.getElementById("sketch-holder");
+        if (sketchHolder) {
+          resizeObserver.observe(sketchHolder);
+        }
+      });
+    </script>
     <script src="sketch.js"></script>
   </head>
   <body>
     <div class="container">
       <div class="headings">
         <h1>A-TALE-AS-YOUNG-AS-TIME</h1>
-        <br>
+        <br />
         <h2>A-BUM-DIARY-PHOTO-ARCHIVE-AND-MEMORY-CAPSULE</h2>
         <h2>FOR-US-BY-US</h2>
         <h2>INLAND-EMPIRE-CA</h2>
         <h2>BROOKLYN-NY</h2>
-        
       </div>
       <div class="clock-container">
         <div class="side-text">
@@ -33,10 +62,11 @@
       </div>
       <div class="headings">
         <h2>CLICK-SPACEBAR-TO-LIVE-IN-THE-MOMENT</h2>
-        <br>
-        
+        <br />
       </div>
-      <a href="https://www.ataleasyoungastime.com/grid" class="neon-button">ENTER-ARCHIVE</a>
+      <a href="https://www.ataleasyoungastime.com/grid" class="neon-button"
+        >ENTER-ARCHIVE</a
+      >
     </div>
   </body>
 </html>

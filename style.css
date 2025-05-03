@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Web437_Cordata_PPC-400';
-  src: url('../public/fonts/Web437_Cordata_PPC-400.woff') format('woff');
+  font-family: "Web437_Cordata_PPC-400";
+  src: url("../public/fonts/Web437_Cordata_PPC-400.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -38,7 +38,11 @@ body {
 
 h1 {
   font-size: 12pt;
-  color: rgb(0, 255, 70);
+  color: rgb(
+    120,
+    192,
+    224
+  ); /* Changed from rgb(0, 255, 70) to #78C0E0 equivalent */
   margin: 0;
   padding: 0;
   letter-spacing: 2px;
@@ -57,11 +61,14 @@ h2 {
   width: 800px;
   height: 800px;
   margin: 0 auto;
+  max-width: 100%;
 }
 
 canvas {
   display: block;
   width: 800px;
+  max-width: 100%;
+  height: auto;
   image-rendering: pixelated;
   filter: brightness(1.2) contrast(1.1) saturate(1.1);
 }
@@ -69,9 +76,13 @@ canvas {
 .neon-button {
   font-family: "Web437_Cordata_PPC-400", monospace;
   font-size: 10pt;
-  color: rgb(0, 255, 70);
+  color: rgb(
+    120,
+    192,
+    224
+  ); /* Changed from rgb(0, 255, 70) to #78C0E0 equivalent */
   background-color: black;
-  border: 1px solid rgb(0, 255, 70);
+  border: 1px solid rgb(120, 192, 224); /* Changed from rgb(0, 255, 70) to #78C0E0 equivalent */
   padding: 6px 12px 4px 12px;
   border-radius: 20px;
   text-decoration: none;
@@ -81,11 +92,15 @@ canvas {
 }
 
 .neon-button:hover {
-    border-color: black;
-    background-color: rgb(0, 255, 70);
-    color: black;
-    cursor: pointer;
-    transition: all 0.1s ease;
+  border-color: black;
+  background-color: rgb(
+    120,
+    192,
+    224
+  ); /* Changed from rgb(0, 255, 70) to #78C0E0 equivalent */
+  color: black;
+  cursor: pointer;
+  transition: all 0.1s ease;
 }
 
 .clock-container {
@@ -110,4 +125,39 @@ canvas {
 /* Right side text alignment */
 .side-text:last-child {
   justify-content: flex-start;
+}
+
+/* Add responsive styles for smaller screens */
+@media screen and (max-width: 900px) {
+  #sketch-holder {
+    width: 100%;
+    height: auto;
+  }
+
+  canvas {
+    width: 100%;
+  }
+
+  .clock-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .side-text {
+    display: none; /* Hide the side buttons on small screens */
+  }
+}
+
+@media screen and (max-width: 600px) {
+  h1 {
+    font-size: 10pt;
+  }
+
+  h2 {
+    font-size: 8pt;
+  }
+
+  .container {
+    padding: 15px 0;
+  }
 }
