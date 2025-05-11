@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Matrix Clock</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- p5 library N -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.js"></script>
-    <!-- Add a small script to resize the canvas properly -->
     <script>
-      // Add debounce function to limit resize events
       function debounce(func, wait) {
         let timeout;
         return function () {
@@ -19,7 +16,6 @@
       }
 
       window.addEventListener("load", function () {
-        // Add a resize observer to adjust canvas size in sketch-holder
         const resizeObserver = new ResizeObserver(
           debounce(function () {
             const sketchHolder = document.getElementById("sketch-holder");
