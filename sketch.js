@@ -124,6 +124,27 @@ function setup() {
   }
 }
 
+function setDynamicGradient(angle, handType) {
+  // Map angle (-PI to PI) to 0-360 degrees
+  let deg = degrees(angle);
+  if (deg < 0) deg += 360;
+  // Pick two colors based on hand type and angle
+  let color1, color2;
+  if (handType === "hour") {
+    color1 = `hsl(${Math.floor(deg)}, 80%, 20%)`;
+    color2 = `hsl(${Math.floor((deg + 120) % 360)}, 80%, 40%)`;
+  } else if (handType === "minute") {
+    color1 = `hsl(${Math.floor((deg + 60) % 360)}, 80%, 25%)`;
+    color2 = `hsl(${Math.floor((deg + 180) % 360)}, 80%, 45%)`;
+  } else {
+    color1 = `hsl(${Math.floor((deg + 180) % 360)}, 80%, 30%)`;
+    color2 = `hsl(${Math.floor((deg + 300) % 360)}, 80%, 50%)`;
+  }
+  // Set the gradient as the background
+  document.body.classList.add("dynamic-gradient");
+  document.body.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+}
+
 function draw() {
   if (!isAnimating && lastBuffer) {
     image(lastBuffer, 0, 0);
@@ -246,6 +267,8 @@ function draw() {
 
   scanLine += 10;
   if (scanLine > height) scanLine = 0;
+
+  setDynamicGradient(mouseAngle, "hour"); // Use hour hand (mouse) for gradient
 
   updateTimeDisplay();
 }

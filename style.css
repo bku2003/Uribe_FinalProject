@@ -11,11 +11,15 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background-color: black;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  transition: background 0.5s;
+}
+
+.dynamic-gradient {
+  transition: background 0.5s;
 }
 
 .container {
